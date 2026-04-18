@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>XINN LINK | Cyberpunk Login</title>
+    <!-- Font & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0a0f1e, #03050b);
+            font-family: 'Space Grotesk', monospace;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* efek glitch background dinamis */
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 255, 0.03) 50%);
+            background-size: 100% 8px;
+            pointer-events: none;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+
+        .glow-orb {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.2), transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            top: -150px;
+            right: -150px;
+            animation: floatGlow 10s infinite alternate;
+        }
+
+        .glow-orb2 {
+            bottom: -200px;
+            left: -200px;
+            top: auto;
+            right: auto;
+            background: radial-gradient(circle, rgba(255, 0, 255, 0.15), transparent 70%);
+            animation: floatGlow2 12s infinite alternate;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+            100% { transform: translate(50px, 50px) scale(1.2); opacity: 0.9; }
+        }
+        @keyframes floatGlow2 {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            100% { transform: translate(-40px, -60px) scale(1.3); opacity: 0.8; }
+        }
+
+        /* main container */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* card cyberpunk */
+        .cyber-card {
+            background: rgba(8, 12, 25, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(0, 255, 255, 0.5);
+            border-radius: 32px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(0, 255, 255, 0.05);
+            width: 100%;
+            max-width: 460px;
+            padding: 2.5rem 2rem;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cyber-card:hover {
+            border-color: #ff00cc;
+            box-shadow: 0 0 35px rgba(255, 0, 204, 0.3), inset 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+
+        /* header */
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #0ff, #f0f, #0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 12px rgba(0, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .brand-tag {
+            font-size: 0.85rem;
+            color: #aaffff;
+            letter-spacing: 2px;
+            word-break: keep-all;
+            display: inline-block;
+            border-top: 1px solid cyan;
+            border-bottom: 1px solid cyan;
+            padding: 4px 16px;
+            backdrop-filter: blur(4px);
+        }
+
+        .brand-tag span {
+            color: #ff66ff;
+            font-weight: bold;
+        }
+
+        /* input group style */
+        .input-group {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #0ff;
+            z-index: 2;
+            text-shadow: 0 0 4px cyan;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(0, 20, 30, 0.6);
+            border: 1px solid #0ff;
+            border-radius: 60px;
+            padding: 14px 20px 14px 48px;
+            font-size: 1rem;
+            font-family: 'Space Grotesk', monospace;
+            color: #eef5ff;
+            transition: all 0.25s;
+            outline: none;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input:focus {
+            border-color: #ff44ee;
+            box-shadow: 0 0 12px #ff44ee, inset 0 0 5px #0ff;
+            background: rgba(0, 30, 40, 0.8);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(100, 200, 255, 0.5);
+            font-weight: 300;
+        }
+
+        /* options row */
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0 1.8rem;
+            font-size: 0.85rem;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #b0f0ff;
+            cursor: pointer;
+        }
+
+        .checkbox input {
+            width: 18px;
+            height: 18px;
+            accent-color: #0ff;
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            color: #ff77ff;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dashed #ff77ff;
+            transition: 0.2s;
+        }
+
+        .forgot-link:hover {
+            color: #0ff;
+            border-bottom-color: #0ff;
+            text-shadow: 0 0 5px cyan;
+        }
+
+        /* tombol utama */
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(95deg, #0ff, #f0f);
+            border: none;
+            border-radius: 60px;
+            padding: 14px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'Space Grotesk', monospace;
+            color: #010514;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+            margin-bottom: 1.5rem;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.7);
+            letter-spacing: 3px;
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* glitch effect on button */
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        /* divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            color: #6c8eff;
+            font-size: 0.7rem;
+            margin: 1rem 0;
+        }
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, cyan, magenta, transparent);
+        }
+        .divider span {
+            padding: 0 12px;
+        }
+
+        /* social cyber */
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 1.8rem;
+            margin-top: 1rem;
+        }
+        .social-icon {
+            background: rgba(0, 255, 255, 0.1);
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: #0ff;
+            border: 1px solid #0ff;
+            transition: 0.2s;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+        .social-icon:hover {
+            transform: translateY(-5px);
+            border-color: #ff44ee;
+            color: #ff44ee;
+            box-shadow: 0 0 15px #ff44ee;
+            background: rgba(255, 68, 238, 0.2);
+        }
+
+        /* sign up */
+        .signup-prompt {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #9bc7ff;
+        }
+        .signup-link {
+            color: #ff77ff;
+            font-weight: bold;
+            text-decoration: none;
+            margin-left: 6px;
+            border-bottom: 1px solid;
+        }
+        .signup-link:hover {
+            color: cyan;
+            text-shadow: 0 0 5px cyan;
+        }
+
+        /* notifikasi custom */
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(16px);
+            border-left: 5px solid #0ff;
+            color: #0ff;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            z-index: 200;
+            font-family: monospace;
+            transition: 0.2s;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 0 20px rgba(0,255,255,0.3);
+        }
+
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* glitch text effect tambahan untuk judul */
+        .glitch-text {
+            animation: glitchSkew 3s infinite;
+        }
+
+        @keyframes glitchSkew {
+            0%, 100% { transform: skew(0deg); opacity: 1; text-shadow: 2px 0 cyan, -2px 0 magenta; }
+            95% { transform: skew(0deg); }
+            96% { transform: skew(2deg); text-shadow: -3px 0 cyan, 3px 0 magenta; }
+            97% { transform: skew(-2deg); }
+            98% { transform: skew(1deg); }
+        }
+
+        /* responsive */
+        @media (max-width: 550px) {
+            .cyber-card {
+                padding: 1.8rem;
+            }
+            .brand h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cyber-bg">
+    <div class="grid-overlay"></div>
+    <div class="scan-line"></div>
+    <div class="glow-orb"></div>
+    <div class="glow-orb glow-orb2"></div>
+</div>
+
+<div class="login-container">
+    <div class="cyber-card">
+        <div class="brand">
+            <h1 class="glitch-text">XINN LINK</h1>
+            <div class="brand-tag">
+                <i class="fas fa-bolt"></i> by <span>XINN GANTENG</span> <i class="fas fa-skull"></i>
+            </div>
+            <div style="margin-top: 10px; font-size: 11px; color: #4affb5;">// ACCESS CYBER REALM //</div>
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <i class="fas fa-user-ninja"></i>
+                <input type="text" id="username" placeholder="USERNAME / NEON ID" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-key"></i>
+                <input type="password" id="password" placeholder="PASSWORD / CYBER KEY">
+            </div>
+            <div class="options">
+                <label class="checkbox">
+                    <input type="checkbox" id="remember"> <span>INGAT AKUN</span>
+                </label>
+                <a href="#" class="forgot-link" id="forgotBtn">LUPA AKSES?</a>
+            </div>
+            <button type="submit" class="login-btn" id="loginButton">
+                <i class="fas fa-plug" style="margin-right: 8px;"></i> LOGIN // ENTER
+            </button>
+        </form>
+
+        <div class="divider">
+            <div class="divider-line"></div>
+            <span>ORBIT SOCIAL</span>
+            <div class="divider-line"></div>
+        </div>
+
+        <div class="social-login">
+            <div class="social-icon" data-social="discord"><i class="fab fa-discord"></i></div>
+            <div class="social-icon" data-social="github"><i class="fab fa-github-alt"></i></div>
+            <div class="social-icon" data-social="metamask"><i class="fas fa-wallet"></i></div>
+        </div>
+
+        <div class="signup-prompt">
+            BELUM PUNYA AKSES? <a href="#" class="signup-link" id="signupBtn">DAFTAR SEKARANG <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<div id="toastMsg" class="toast-msg">⚡ WELCOME BACK, OPERATOR ⚡</div>
+
+<script>
+    // elemen
+    const loginForm = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const rememberCheck = document.getElementById('remember');
+    const toast = document.getElementById('toastMsg');
+
+    // fungsi notifikasi cyber
+    function showMessage(msg, isError = false) {
+        toast.textContent = isError ? `⚠️ ${msg} ⚠️` : `✨ ${msg} ✨`;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2800);
+    }
+
+    // efek glitch sementara pada tombol atau card
+    function glitchEffect(element) {
+        if(!element) return;
+        element.style.transform = 'skew(1deg)';
+        setTimeout(() => { element.style.transform = ''; }, 100);
+    }
+
+    // load stored username jika remember pernah dicentang
+    function loadStored() {
+        const storedUser = localStorage.getItem('xinn_remember_user');
+        const storedFlag = localStorage.getItem('xinn_remember_flag');
+        if(storedFlag === 'true' && storedUser) {
+            usernameInput.value = storedUser;
+            rememberCheck.checked = true;
+        } else {
+            rememberCheck.checked = false;
+        }
+    }
+
+    // simpan data remember
+    function setRemember(username) {
+        if(rememberCheck.checked) {
+            localStorage.setItem('xinn_remember_user', username);
+            localStorage.setItem('xinn_remember_flag', 'true');
+        } else {
+            localStorage.removeItem('xinn_remember_user');
+            localStorage.setItem('xinn_remember_flag', 'false');
+        }
+    }
+
+    // validasi sederhana dengan sentuhan cyberpunk (bisa diintegrasi ke backend nanti)
+    function handleLogin(e) {
+        e.preventDefault();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        // animasi tombol
+        const btn = document.getElementById('loginButton');
+        glitchEffect(btn);
+
+        if(!username || !password) {
+            showMessage('SISTEM MEMBUTUHKAN USERNAME & PASSWORD', true);
+            // efek input merah sesaat
+            if(!username) usernameInput.style.boxShadow = '0 0 8px #ff3366';
+            if(!password) passwordInput.style.boxShadow = '0 0 8px #ff3366';
+            setTimeout(() => {
+                usernameInput.style.boxShadow = '';
+                passwordInput.style.boxShadow = '';
+            }, 500);
+            return;
+        }
+
+        // karena ini frontend demo, kita buat akses dengan kredensial sederhana tapi keren
+        // Syarat: username minimal 3 char, password minimal 4 char -> sukses dengan pesan khusus
+        // Untuk sentuhan "XINN GANTENG" ada mode tersembunyi : jika username = "xinn" dan password "ganteng" atau admin mode
+        let welcomeMsg = '';
+        let isSpecial = false;
+        
+        if((username.toLowerCase() === 'xinn' && password.toLowerCase() === 'ganteng') || (username.toLowerCase() === 'admin' && password === 'cyber2024')) {
+            welcomeMsg = `⚡ AKSES GRAND MASTER ${username.toUpperCase()} ⚡ SELAMAT DATANG DI XINN LINK ⚡`;
+            isSpecial = true;
+        } else if(username.length >= 3 && password.length >= 4) {
+            welcomeMsg = `🚀 LOGIN BERHASIL! SELAMAT DATANG, ${username.toUpperCase()} DI JARINGAN XINN 🚀`;
+        } else {
+            showMessage('KREDENSIAL TIDAK VALID. PERIKSA LAGI!', true);
+            return;
+        }
+
+        // simpan remember jika centang
+        setRemember(username);
+        
+        // tampilkan pesan sukses dengan gaya
+        showMessage(welcomeMsg, false);
+        
+        // tambahan: efek cyber pada container
+        const card = document.querySelector('.cyber-card');
+        card.style.borderColor = '#ff44ee';
+        card.style.transition = '0.2s';
+        setTimeout(() => {
+            card.style.borderColor = 'rgba(0, 255, 255, 0.5)';
+        }, 800);
+        
+        // console log atau redirect imajinasi (demo)
+        console.log(`[XINN LINK] Login by: ${username} | remember: ${rememberCheck.checked} | special: ${isSpecial}`);
+        
+        // optional: reset form jika ingin? tidak, biarkan.
+        // jika ingin redirect ke dashboard, bisa tambahkan window.location.href, tapi biarkan sebagai demo interaktif
+        // Simulasi efek loading dan reset glitch
+        setTimeout(() => {
+            // efek teks tombol berubah sebentar
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> CONNECTED //';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 1500);
+        }, 200);
+    }
+
+    // Forgot password interaksi
+    function handleForgot(e) {
+        e.preventDefault();
+        showMessage('🔒 KIRIMKAN KODE PULIH KE NEURON LINK? FITUR SEGERA HADIR', false);
+        glitchEffect(document.querySelector('.forgot-link'));
+    }
+    
+    // Signup interaksi
+    function handleSignup(e) {
+        e.preventDefault();
+        showMessage('📡 PENDAFTARAN ANGGOTA BARU: HUBUNGI ADMIN XINN DI JARINGAN BAWAH TANAH 📡', false);
+        const signLink = document.querySelector('.signup-link');
+        glitchEffect(signLink);
+    }
+    
+    // social login demo
+    function socialHandler(platform) {
+        showMessage(`⛓️ MENYAMBUNG KE ${platform.toUpperCase()} CHANNEL ... AKAN SEGERA ⛓️`, false);
+        glitchEffect(document.querySelector(`.social-icon[data-social="${platform}"]`));
+    }
+    
+    // event listener
+    loginForm.addEventListener('submit', handleLogin);
+    document.getElementById('forgotBtn').addEventLi
